@@ -1,122 +1,244 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [activeTab, setActiveTab] = useState('Todos');
+  const [quantities, setQuantities] = useState<Record<number, number>>({});
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [currentDateView, setCurrentDateView] = useState(new Date());
+  
+  const [buyerName, setBuyerName] = useState("");
+  const [buyerPhone, setBuyerPhone] = useState("");
+  const [buyerAddress, setBuyerAddress] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  
+  const [honoreeName, setHonoreeName] = useState("");
+  const [honoreePhone, setHonoreePhone] = useState("");
+  const [honoreeAddress, setHonoreeAddress] = useState("");
+  const [bookingData, setBookingData] = useState({ date: '', package: '' });
+
+  const [giftProduct, setGiftProduct] = useState<any | null>(null);
+  const [giftQuantity, setGiftQuantity] = useState(1);
+
+  const productos = [
+    { id: 1, nombre: 'Triple Chocolate', precio: 450, img: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&q=80', categoria: 'Pasteles', descripcion: 'Delicioso pastel con tres capas de chocolate amargo, leche y blanco.' },
+    { id: 2, nombre: 'Sea Salt', precio: 50, img: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&q=80', categoria: 'Cupcakes', descripcion: 'Cupcake suave con un toque de sal marina y caramelo artesanal.' },
+    { id: 3, nombre: 'Walnut Chip', precio: 420, img: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&q=80', categoria: 'Pasteles', descripcion: 'Pastel esponjoso con trozos de nuez y chispas de chocolate premium.' },
+    { id: 4, nombre: 'Peanut Butter', precio: 35, img: 'https://images.unsplash.com/photo-1509482560494-4126f8249959?w=400&q=80', categoria: 'Galletas', descripcion: 'Galleta crujiente de mantequilla de maní hecha al horno tradicional.' }
+  ];
+
+  const categorias = ['Todos', 'Pasteles', 'Cupcakes', 'Galletas'];
+  const totalItems = Object.values(quantities).reduce((acc, curr) => acc + curr, 0);
+
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const days = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    return { days, firstDay };
+  };
+
+  const { days, firstDay } = getDaysInMonth(currentDateView);
+
+  const updateQuantity = (id: number, delta: number) => {
+    setQuantities(prev => ({ ...prev, [id]: Math.max(0, (prev[id] || 0) + delta) }));
+  };
+
+  const productosFiltrados = activeTab === 'Todos' ? productos : productos.filter(p => p.categoria === activeTab);
+  const productosEnCarrito = productos.filter(p => (quantities[p.id] || 0) > 0);
+  const montoTotal = productosEnCarrito.reduce((acc, item) => acc + (item.precio * quantities[item.id]), 0);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div style={{ minHeight: '100vh', backgroundColor: '#050505', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 0 120px 0' }}>
+      <style>
+        {`
+          .majito-input { padding: 12px; border-radius: 8px; border: 1px solid #d9b88f; background: transparent !important; color: #d9b88f !important; width: 100%; box-sizing: border-box; font-family: sans-serif; appearance: none; }
+          .majito-input::placeholder { color: #d9b88f; opacity: 0.6; }
+          select.majito-input { cursor: pointer; color-scheme: dark; }
+        `}
+      </style>
+      
+      <div style={{ width: '90%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <h1 style={{ color: '#d9b88f', fontSize: '36px', fontFamily: 'serif', margin: 0 }}>Majito Cake</h1>
+          <p style={{ color: '#d9b88f', fontSize: '16px', fontStyle: 'italic', margin: 0 }}>Horneando sueños</p>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
+        <button onClick={() => setIsBookingOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d9b88f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+           <span style={{ color: '#d9b88f', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>eventos</span>
         </button>
-      </section>
+      </div>
 
-      <div className="ticks"></div>
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '40px', flexWrap: 'wrap', justifyContent: 'center' }}>
+        {categorias.map((cat) => (
+          <button key={cat} onClick={() => setActiveTab(cat)} style={{ backgroundColor: activeTab === cat ? '#d9b88f' : 'transparent', color: activeTab === cat ? '#050505' : '#d9b88f', border: '1.5px solid #d9b88f', borderRadius: '20px', padding: '6px 16px', fontSize: '14px', cursor: 'pointer', transition: 'all 0.3s' }}>{cat}</button>
+        ))}
+      </div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      {[0, 2].map((startIndex) => {
+        const fila = productosFiltrados.slice(startIndex, startIndex + 2);
+        if (fila.length === 0) return null;
+        return (
+          <div key={startIndex} style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '40px', width: '90%' }}>
+            {fila.map((item) => (
+              <div key={item.id} style={{ position: 'relative', width: '42%', aspectRatio: '3/6', border: '1.5px solid #d9b88f', borderRadius: '30px', backgroundColor: '#1c1c1e', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <button onClick={() => { setGiftProduct(item); setGiftQuantity(1); }} style={{ position: 'absolute', top: '10px', left: '10px', background: 'none', border: 'none', cursor: 'pointer', zIndex: 10 }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9b88f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"></rect><path d="M7 8v10a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V8"></path><path d="M12 8v12"></path><path d="M16 4h-4a2 2 0 0 0-2 2v2"></path><path d="M8 4h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+                <div style={{ flex: '2', padding: '8px', display: 'flex' }}>
+                  <div style={{ width: '100%', height: '100%', border: '1px solid #d9b88f', borderRadius: '22px', overflow: 'hidden' }}><img src={item.img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={item.nombre} /></div>
+                </div>
+                <div style={{ padding: '8px', textAlign: 'center' }}><p style={{ color: '#d9b88f', margin: '0', fontSize: '14px', fontWeight: 'bold' }}>{item.nombre}</p></div>
+                <div style={{ paddingBottom: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <button onClick={() => updateQuantity(item.id, -1)} style={{ backgroundColor: '#333', border: 'none', color: '#d9b88f', borderRadius: '5px', width: '25px', height: '25px', cursor: 'pointer' }}>-</button>
+                    <span style={{ color: '#d9b88f', fontWeight: 'bold', width: '20px', textAlign: 'center' }}>{quantities[item.id] || 0}</span>
+                    <button onClick={() => updateQuantity(item.id, 1)} style={{ backgroundColor: '#333', border: 'none', color: '#d9b88f', borderRadius: '5px', width: '25px', height: '25px', cursor: 'pointer' }}>+</button>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginTop: '5px' }}><button onClick={() => setSelectedProduct(item)} style={{ backgroundColor: '#d9b88f', border: 'none', borderRadius: '8px', padding: '4px 20px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>Ver</button></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      })}
+
+      {giftProduct && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(5, 5, 5, 0.98)', zIndex: 4000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', overflowY: 'auto' }}>
+          <div style={{ backgroundColor: '#1c1c1e', padding: '20px', borderRadius: '30px', border: '1.5px solid #d9b88f', width: '100%', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <h2 style={{ color: '#d9b88f', textAlign: 'center', margin: 0 }}>Regalar {giftProduct.nombre}</h2>
+            <input className="majito-input" placeholder="Tu Nombre" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} />
+            <input className="majito-input" placeholder="Tu WhatsApp" value={buyerPhone} onChange={(e) => setBuyerPhone(e.target.value)} />
+            <input className="majito-input" placeholder="Nombre del Festejado" value={honoreeName} onChange={(e) => setHonoreeName(e.target.value)} />
+            <input className="majito-input" placeholder="WhatsApp del Festejado" value={honoreePhone} onChange={(e) => setHonoreePhone(e.target.value)} />
+            <input className="majito-input" placeholder="Dirección de Entrega" value={honoreeAddress} onChange={(e) => setHonoreeAddress(e.target.value)} />
+            
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', margin: '15px 0' }}>
+              <button onClick={() => setGiftQuantity(Math.max(1, giftQuantity - 1))} style={{ backgroundColor: '#333', border: 'none', color: '#d9b88f', borderRadius: '8px', width: '40px', height: '40px', cursor: 'pointer', fontSize: '20px' }}>-</button>
+              <span style={{ color: '#fff', fontSize: '20px', fontWeight: 'bold', minWidth: '30px', textAlign: 'center' }}>{giftQuantity}</span>
+              <button onClick={() => setGiftQuantity(giftQuantity + 1)} style={{ backgroundColor: '#333', border: 'none', color: '#d9b88f', borderRadius: '8px', width: '40px', height: '40px', cursor: 'pointer', fontSize: '20px' }}>+</button>
+            </div>
+
+            <button onClick={() => { updateQuantity(giftProduct.id, giftQuantity); setGiftProduct(null); }} style={{ backgroundColor: '#d9b88f', border: 'none', borderRadius: '10px', padding: '12px', fontWeight: 'bold', cursor: 'pointer' }}>Agregar al Carrito</button>
+            <button onClick={() => setGiftProduct(null)} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>Cancelar</button>
+          </div>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      )}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {isBookingOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(5, 5, 5, 0.98)', zIndex: 4000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', overflowY: 'auto' }}>
+          <div style={{ backgroundColor: '#1c1c1e', padding: '20px', borderRadius: '30px', border: '1.5px solid #d9b88f', width: '100%', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <h2 style={{ color: '#d9b88f', textAlign: 'center', margin: 0 }}>Reservar Evento</h2>
+            <input className="majito-input" placeholder="Nombre" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} />
+            <input className="majito-input" placeholder="Teléfono" value={buyerPhone} onChange={(e) => setBuyerPhone(e.target.value)} />
+            <input className="majito-input" placeholder="Nombre Festejado" value={honoreeName} onChange={(e) => setHonoreeName(e.target.value)} />
+            <input className="majito-input" placeholder="Dirección Entrega" value={honoreeAddress} onChange={(e) => setHonoreeAddress(e.target.value)} />
+            <select className="majito-input" value={bookingData.package} onChange={(e) => setBookingData({...bookingData, package: e.target.value})}>
+              <option value="" disabled style={{background: '#1c1c1e'}}>Selecciona paquete</option>
+              <option value="50" style={{background: '#1c1c1e'}}>Paquete 1: 50 personas</option>
+              <option value="100" style={{background: '#1c1c1e'}}>Paquete 2: 100 personas</option>
+              <option value="150" style={{background: '#1c1c1e'}}>Paquete 3: 150 personas</option>
+            </select>
+            
+            <div style={{ color: '#d9b88f', fontSize: '12px', padding: '10px 0' }}>
+                <label>Selecciona fecha:</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', marginTop: '10px' }}>
+                    <button onClick={() => setCurrentDateView(new Date(currentDateView.setMonth(currentDateView.getMonth() - 1)))} style={{ background: 'none', border: 'none', color: '#d9b88f', cursor: 'pointer' }}>◀</button>
+                    <span>{currentDateView.toLocaleString('es-ES', { month: 'long', year: 'numeric' })}</span>
+                    <button onClick={() => setCurrentDateView(new Date(currentDateView.setMonth(currentDateView.getMonth() + 1)))} style={{ background: 'none', border: 'none', color: '#d9b88f', cursor: 'pointer' }}>▶</button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '5px' }}>
+                    {['Do','Lu','Ma','Mi','Ju','Vi','Sa'].map(d => <div key={d} style={{ textAlign: 'center', fontWeight: 'bold' }}>{d}</div>)}
+                    {Array.from({ length: firstDay }).map((_, i) => <div key={`empty-${i}`} />)}
+                    {Array.from({ length: days }).map((_, i) => (
+                        <button key={i} onClick={() => setBookingData({...bookingData, date: `${i + 1}/${currentDateView.getMonth() + 1}/${currentDateView.getFullYear()}`})} style={{ background: bookingData.date === `${i + 1}/${currentDateView.getMonth() + 1}/${currentDateView.getFullYear()}` ? '#d9b88f' : 'transparent', color: bookingData.date === `${i + 1}/${currentDateView.getMonth() + 1}/${currentDateView.getFullYear()}` ? '#000' : '#d9b88f', border: 'none', borderRadius: '50%', padding: '5px', cursor: 'pointer' }}>
+                            {i + 1}
+                        </button>
+                    ))}
+                </div>
+            </div>
+            <button onClick={() => { setIsBookingOpen(false); setActiveTab('Todos'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} style={{ backgroundColor: '#d9b88f', border: 'none', borderRadius: '10px', padding: '12px', fontWeight: 'bold', cursor: 'pointer' }}>Confirmar Reserva</button>
+            <button onClick={() => { setIsBookingOpen(false); setActiveTab('Todos'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>Cerrar</button>
+          </div>
+        </div>
+      )}
+
+      {selectedProduct && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(5, 5, 5, 0.9)', backdropFilter: 'blur(5px)', zIndex: 2000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+          <div style={{ position: 'relative', backgroundColor: '#1c1c1e', padding: '25px', borderRadius: '30px', border: '1.5px solid #d9b88f', width: '90%', maxWidth: '350px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxShadow: '0 20px 40px rgba(0,0,0,0.8)', maxHeight: '90vh', overflowY: 'auto' }}>
+            <img src={selectedProduct.img} style={{ width: '100%', height: '150px', borderRadius: '20px', marginBottom: '20px', objectFit: 'cover' }} alt={selectedProduct.nombre} />
+            <h2 style={{ color: '#d9b88f', margin: '0 0 10px 0', fontSize: '20px' }}>{selectedProduct.nombre}</h2>
+            <p style={{ color: '#fff', fontSize: '14px', marginBottom: '15px', lineHeight: '1.4' }}>{selectedProduct.descripcion}</p>
+            
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginBottom: '10px' }}>
+                    <button onClick={() => updateQuantity(selectedProduct.id, -1)} style={{ backgroundColor: '#333', border: 'none', color: '#d9b88f', borderRadius: '8px', width: '40px', height: '40px', cursor: 'pointer', fontSize: '20px' }}>-</button>
+                    <span style={{ color: '#fff', fontSize: '20px', fontWeight: 'bold', minWidth: '30px' }}>{quantities[selectedProduct.id] || 0}</span>
+                    <button onClick={() => updateQuantity(selectedProduct.id, 1)} style={{ backgroundColor: '#333', border: 'none', color: '#d9b88f', borderRadius: '8px', width: '40px', height: '40px', cursor: 'pointer', fontSize: '20px' }}>+</button>
+                </div>
+            </div>
+            <button onClick={() => setSelectedProduct(null)} style={{ backgroundColor: '#d9b88f', color: '#050505', border: 'none', borderRadius: '10px', padding: '10px 25px', fontWeight: 'bold', cursor: 'pointer', fontSize: '14px', width: '100%' }}>Aceptar</button>
+            <button onClick={() => setSelectedProduct(null)} style={{ background: 'none', border: 'none', color: '#888', marginTop: '10px', cursor: 'pointer' }}>Cerrar</button>
+          </div>
+        </div>
+      )}
+
+      {isCartOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(5, 5, 5, 0.95)', zIndex: 3000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', overflowY: 'auto' }}>
+          <div style={{ backgroundColor: '#1c1c1e', padding: '25px', borderRadius: '30px', border: '1.5px solid #d9b88f', width: '100%', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <h2 style={{ color: '#d9b88f', textAlign: 'center', margin: 0 }}>Finalizar Compra</h2>
+            
+            <input className="majito-input" placeholder="Nombre del Comprador" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} />
+            <input className="majito-input" placeholder="WhatsApp" value={buyerPhone} onChange={(e) => setBuyerPhone(e.target.value)} />
+            <input className="majito-input" placeholder="Dirección de Entrega" value={buyerAddress} onChange={(e) => setBuyerAddress(e.target.value)} />
+            
+            <select className="majito-input" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+              <option value="" disabled style={{background: '#1c1c1e'}}>Tipo de Pago</option>
+              <option value="transferencia" style={{background: '#1c1c1e'}}>Transferencia Bancaria</option>
+              <option value="efectivo" style={{background: '#1c1c1e'}}>Efectivo</option>
+              <option value="oxxo" style={{background: '#1c1c1e'}}>Oxxo (ICOS)</option>
+            </select>
+
+            <div style={{ maxHeight: '180px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px', paddingRight: '5px' }}>
+              {productosEnCarrito.length === 0 ? <p style={{ color: '#888', textAlign: 'center' }}>Carrito vacío</p> : productosEnCarrito.map(item => (
+                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', width: '50%' }}>
+                    <span style={{ color: '#fff', fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.nombre}</span>
+                    <span style={{ color: '#d9b88f', fontSize: '12px' }}>${item.precio * quantities[item.id]}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button onClick={() => updateQuantity(item.id, -1)} style={{ backgroundColor: '#333', border: 'none', color: '#d9b88f', borderRadius: '5px', width: '25px', height: '25px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>-</button>
+                    <span style={{ color: '#d9b88f', fontWeight: 'bold', width: '15px', textAlign: 'center', fontSize: '14px' }}>{quantities[item.id]}</span>
+                    <button onClick={() => updateQuantity(item.id, 1)} style={{ backgroundColor: '#333', border: 'none', color: '#d9b88f', borderRadius: '5px', width: '25px', height: '25px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', borderTop: '1px solid #d9b88f', paddingTop: '15px', marginTop: '5px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#fff', fontSize: '14px' }}>
+                <span>Total de Productos:</span>
+                <span style={{ fontWeight: 'bold', color: '#d9b88f' }}>{totalItems}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#fff', fontSize: '16px', fontWeight: 'bold' }}>
+                <span>Monto Final:</span>
+                <span style={{ color: '#d9b88f' }}>${montoTotal}</span>
+              </div>
+            </div>
+
+            <button onClick={() => setIsCartOpen(false)} style={{ backgroundColor: '#d9b88f', border: 'none', borderRadius: '10px', padding: '12px', fontWeight: 'bold', marginTop: '10px', cursor: 'pointer' }}>Confirmar Pedido</button>
+            <button onClick={() => setIsCartOpen(false)} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>Cerrar</button>
+          </div>
+        </div>
+      )}
+
+      <div style={{ position: 'fixed', bottom: '20px', left: '20px', right: '20px', backgroundColor: 'rgba(255, 255, 255, 0.14)', backdropFilter: 'blur(15px)', border: '1px solid rgba(217, 184, 143, 0.3)', borderRadius: '50px', padding: '15px 0', display: 'flex', justifyContent: 'center', zIndex: 1000, boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+        <button onClick={() => setIsCartOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative' }}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d9b88f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          {totalItems > 0 && <div style={{ position: 'absolute', top: '-5px', right: '-5px', backgroundColor: '#d9b88f', color: '#050505', borderRadius: '50%', width: '16px', height: '16px', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>{totalItems}</div>}
+        </button>
+      </div>
+    </div>
+  );
 }
-
-export default App

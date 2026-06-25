@@ -1,12 +1,22 @@
 import { useState } from 'react';
+import type { ChangeEvent } from 'react';
 import { InstallPrompt } from './components/InstallPrompt';
+
+interface Producto {
+  id: number;
+  nombre: string;
+  precio: number;
+  img: string;
+  categoria: string;
+  descripcion: string;
+}
 
 interface UpsellModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddVela: () => void;
   updateQuantity: (id: number, delta: number) => void;
-  productos: any[];
+  productos: Producto[];
   quantities: Record<number, number>;
 }
 
@@ -60,25 +70,25 @@ const UpsellModal = ({ isOpen, onClose, onAddVela, updateQuantity, productos, qu
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('Todos');
+  const [activeTab, setActiveTab] = useState<string>('Todos');
   const [quantities, setQuantities] = useState<Record<number, number>>({});
-  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isUpsellOpen, setIsUpsellOpen] = useState(false);
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [currentDateView, setCurrentDateView] = useState(new Date());
-  const [buyerName, setBuyerName] = useState("");
-  const [buyerPhone, setBuyerPhone] = useState("");
-  const [buyerAddress, setBuyerAddress] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [honoreeName, setHonoreeName] = useState("");
-  const [honoreePhone, setHonoreePhone] = useState("");
-  const [honoreeAddress, setHonoreeAddress] = useState("");
-  const [bookingData, setBookingData] = useState({ date: '', package: '' });
-  const [giftProduct, setGiftProduct] = useState<any | null>(null);
-  const [giftQuantity, setGiftQuantity] = useState(1);
+  const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null);
+  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+  const [isUpsellOpen, setIsUpsellOpen] = useState<boolean>(false);
+  const [isBookingOpen, setIsBookingOpen] = useState<boolean>(false);
+  const [currentDateView, setCurrentDateView] = useState<Date>(new Date());
+  const [buyerName, setBuyerName] = useState<string>("");
+  const [buyerPhone, setBuyerPhone] = useState<string>("");
+  const [buyerAddress, setBuyerAddress] = useState<string>("");
+  const [paymentMethod, setPaymentMethod] = useState<string>("");
+  const [honoreeName, setHonoreeName] = useState<string>("");
+  const [honoreePhone, setHonoreePhone] = useState<string>("");
+  const [honoreeAddress, setHonoreeAddress] = useState<string>("");
+  const [bookingData, setBookingData] = useState<{date: string, package: string}>({ date: '', package: '' });
+  const [giftProduct, setGiftProduct] = useState<Producto | null>(null);
+  const [giftQuantity, setGiftQuantity] = useState<number>(1);
 
-  const productos = [
+  const productos: Producto[] = [
     { id: 1, nombre: 'Triple Chocolate', precio: 450, img: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&q=80', categoria: 'Pasteles', descripcion: 'Delicioso pastel con tres capas de chocolate amargo, leche y blanco.' },
     { id: 2, nombre: 'Sea Salt', precio: 50, img: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&q=80', categoria: 'Cupcakes', descripcion: 'Cupcake suave con un toque de sal marina y caramelo artesanal.' },
     { id: 3, nombre: 'Walnut Chip', precio: 420, img: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&q=80', categoria: 'Pasteles', descripcion: 'Pastel esponjoso con trozos de nuez y chispas de chocolate premium.' },
@@ -171,11 +181,11 @@ export default function App() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(255, 242, 230, 0.95)', zIndex: 4000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', overflowY: 'auto' }}>
           <div style={{ backgroundColor: 'var(--color-sunset)', padding: '20px', borderRadius: '30px', border: '1.5px solid var(--color-pink)', width: '100%', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <h2 style={{ color: 'var(--color-pink)', textAlign: 'center', margin: 0 }}>Regalar {giftProduct.nombre}</h2>
-            <input className="majito-input" placeholder="Tu Nombre" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} />
-            <input className="majito-input" placeholder="Tu WhatsApp" value={buyerPhone} onChange={(e) => setBuyerPhone(e.target.value)} />
-            <input className="majito-input" placeholder="Nombre del Festejado" value={honoreeName} onChange={(e) => setHonoreeName(e.target.value)} />
-            <input className="majito-input" placeholder="WhatsApp del Festejado" value={honoreePhone} onChange={(e) => setHonoreePhone(e.target.value)} />
-            <input className="majito-input" placeholder="Dirección de Entrega" value={honoreeAddress} onChange={(e) => setBuyerAddress(e.target.value)} />
+            <input className="majito-input" placeholder="Tu Nombre" value={buyerName} onChange={(e: ChangeEvent<HTMLInputElement>) => setBuyerName(e.target.value)} />
+            <input className="majito-input" placeholder="Tu WhatsApp" value={buyerPhone} onChange={(e: ChangeEvent<HTMLInputElement>) => setBuyerPhone(e.target.value)} />
+            <input className="majito-input" placeholder="Nombre del Festejado" value={honoreeName} onChange={(e: ChangeEvent<HTMLInputElement>) => setHonoreeName(e.target.value)} />
+            <input className="majito-input" placeholder="WhatsApp del Festejado" value={honoreePhone} onChange={(e: ChangeEvent<HTMLInputElement>) => setHonoreePhone(e.target.value)} />
+            <input className="majito-input" placeholder="Dirección de Entrega" value={buyerAddress} onChange={(e: ChangeEvent<HTMLInputElement>) => setBuyerAddress(e.target.value)} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', margin: '15px 0' }}>
               <button onClick={() => setGiftQuantity(Math.max(1, giftQuantity - 1))} style={{ backgroundColor: 'var(--color-crema)', border: 'none', color: 'var(--color-mocha)', borderRadius: '8px', width: '40px', height: '40px', cursor: 'pointer', fontSize: '20px' }}>-</button>
               <span style={{ color: 'var(--color-mocha)', fontSize: '20px', fontWeight: 'bold', minWidth: '30px', textAlign: 'center' }}>{giftQuantity}</span>
@@ -191,11 +201,11 @@ export default function App() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(255, 242, 230, 0.95)', zIndex: 4000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', overflowY: 'auto' }}>
           <div style={{ backgroundColor: 'var(--color-sunset)', padding: '20px', borderRadius: '30px', border: '1.5px solid var(--color-pink)', width: '100%', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <h2 style={{ color: 'var(--color-pink)', textAlign: 'center', margin: 0 }}>Reservar Evento</h2>
-            <input className="majito-input" placeholder="Nombre" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} />
-            <input className="majito-input" placeholder="Tu WhatsApp" value={buyerPhone} onChange={(e) => setBuyerPhone(e.target.value)} />
-            <input className="majito-input" placeholder="Dirección" value={honoreeAddress} onChange={(e) => setHonoreeAddress(e.target.value)} />
-            <input className="majito-input" placeholder="Dirección del evento" value={honoreeAddress} onChange={(e) => setHonoreeAddress(e.target.value)} />
-            <select className="majito-input" value={bookingData.package} onChange={(e) => setBookingData({...bookingData, package: e.target.value})}>
+            <input className="majito-input" placeholder="Nombre" value={buyerName} onChange={(e: ChangeEvent<HTMLInputElement>) => setBuyerName(e.target.value)} />
+            <input className="majito-input" placeholder="Tu WhatsApp" value={buyerPhone} onChange={(e: ChangeEvent<HTMLInputElement>) => setBuyerPhone(e.target.value)} />
+            <input className="majito-input" placeholder="Dirección" value={honoreeAddress} onChange={(e: ChangeEvent<HTMLInputElement>) => setHonoreeAddress(e.target.value)} />
+            <input className="majito-input" placeholder="Dirección del evento" value={honoreeAddress} onChange={(e: ChangeEvent<HTMLInputElement>) => setHonoreeAddress(e.target.value)} />
+            <select className="majito-input" value={bookingData.package} onChange={(e: ChangeEvent<HTMLSelectElement>) => setBookingData({...bookingData, package: e.target.value})}>
               <option value="" disabled style={{background: 'var(--color-sunset)', color: 'var(--color-mocha)'}}>Selecciona paquete</option>
               <option value="50" style={{background: 'var(--color-sunset)', color: 'var(--color-mocha)'}}>Paquete 1: 50 personas</option>
               <option value="100" style={{background: 'var(--color-sunset)', color: 'var(--color-mocha)'}}>Paquete 2: 100 personas</option>
@@ -247,10 +257,10 @@ export default function App() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(255, 242, 230, 0.95)', zIndex: 3000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', overflowY: 'auto' }}>
           <div style={{ backgroundColor: 'var(--color-sunset)', padding: '25px', borderRadius: '30px', border: '1.5px solid var(--color-pink)', width: '100%', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <h2 style={{ color: 'var(--color-pink)', textAlign: 'center', margin: 0 }}>Finalizar Compra</h2>
-            <input className="majito-input" placeholder="Nombre del Comprador" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} />
-            <input className="majito-input" placeholder="WhatsApp" value={buyerPhone} onChange={(e) => setBuyerPhone(e.target.value)} />
-            <input className="majito-input" placeholder="Dirección de Entrega" value={buyerAddress} onChange={(e) => setBuyerAddress(e.target.value)} />
-            <select className="majito-input" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+            <input className="majito-input" placeholder="Nombre del Comprador" value={buyerName} onChange={(e: ChangeEvent<HTMLInputElement>) => setBuyerName(e.target.value)} />
+            <input className="majito-input" placeholder="WhatsApp" value={buyerPhone} onChange={(e: ChangeEvent<HTMLInputElement>) => setBuyerPhone(e.target.value)} />
+            <input className="majito-input" placeholder="Dirección del lugar" value={honoreeAddress} onChange={(e: ChangeEvent<HTMLInputElement>) => setHonoreeAddress(e.target.value)} />
+            <select className="majito-input" value={paymentMethod} onChange={(e: ChangeEvent<HTMLSelectElement>) => setPaymentMethod(e.target.value)}>
               <option value="" disabled style={{background: 'var(--color-sunset)', color: 'var(--color-mocha)'}}>Tipo de Pago</option>
               <option value="transferencia" style={{background: 'var(--color-sunset)', color: 'var(--color-mocha)'}}>Transferencia Bancaria</option>
               <option value="efectivo" style={{background: 'var(--color-sunset)', color: 'var(--color-mocha)'}}>Efectivo</option>

@@ -203,8 +203,7 @@ export default function App() {
             <h2 style={{ color: 'var(--color-pink)', textAlign: 'center', margin: 0 }}>Reservar Evento</h2>
             <input className="majito-input" placeholder="Nombre" value={buyerName} onChange={(e: ChangeEvent<HTMLInputElement>) => setBuyerName(e.target.value)} />
             <input className="majito-input" placeholder="Tu WhatsApp" value={buyerPhone} onChange={(e: ChangeEvent<HTMLInputElement>) => setBuyerPhone(e.target.value)} />
-            <input className="majito-input" placeholder="Dirección" value={honoreeAddress} onChange={(e: ChangeEvent<HTMLInputElement>) => setHonoreeAddress(e.target.value)} />
-            <input className="majito-input" placeholder="Dirección del evento" value={honoreeAddress} onChange={(e: ChangeEvent<HTMLInputElement>) => setHonoreeAddress(e.target.value)} />
+            <input className="majito-input" placeholder="Dirección del lugar" value={honoreeAddress} onChange={(e: ChangeEvent<HTMLInputElement>) => setHonoreeAddress(e.target.value)} />
             <select className="majito-input" value={bookingData.package} onChange={(e: ChangeEvent<HTMLSelectElement>) => setBookingData({...bookingData, package: e.target.value})}>
               <option value="" disabled style={{background: 'var(--color-sunset)', color: 'var(--color-mocha)'}}>Selecciona paquete</option>
               <option value="50" style={{background: 'var(--color-sunset)', color: 'var(--color-mocha)'}}>Paquete 1: 50 personas</option>

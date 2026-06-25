@@ -1,70 +1,10 @@
-import { useState } from 'react';
-import { InstallPrompt } from './components/InstallPrompt';
-
-interface UpsellModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onAddVela: () => void;
-  updateQuantity: (id: number, delta: number) => void;
-  productos: any[];
-  quantities: Record<number, number>;
-}
-
-const UpsellModal = ({ isOpen, onClose, onAddVela, updateQuantity, productos, quantities }: UpsellModalProps) => {
-  const [view, setView] = useState<'main' | 'category'>('main');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const categorias = Array.from(new Set(productos.map(p => p.categoria)));
-
-  if (!isOpen) return null;
-
-  return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(255, 242, 230, 0.95)', zIndex: 5000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-      <div style={{ backgroundColor: 'var(--color-sunset)', padding: '25px', borderRadius: '30px', border: '1.5px solid var(--color-pink)', width: '100%', maxWidth: '350px', textAlign: 'center', maxHeight: '80vh', overflowY: 'auto' }}>
-        {view === 'main' ? (
-          <>
-            <h2 style={{ color: 'var(--color-pink)', margin: '0 0 20px 0' }}>¿Quieres agregar algo especial?</h2>
-            <button onClick={() => { onAddVela(); onClose(); }} style={{ width: '100%', margin: '5px 0 20px 0', padding: '12px', borderRadius: '10px', border: '1px solid var(--color-pink)', background: 'white', cursor: 'pointer', color: 'var(--color-mocha)' }}>🕯️ Agregar Vela (+ $50)</button>
-            <p style={{ color: 'var(--color-mocha)', margin: '0 0 10px 0', fontSize: '14px' }}>O explora por categorías:</p>
-            {categorias.map((cat) => (
-              <button key={cat} onClick={() => { setSelectedCategory(cat); setView('category'); }} style={{ width: '100%', margin: '5px 0', padding: '12px', borderRadius: '10px', border: '1px solid var(--color-pink)', background: 'white', cursor: 'pointer', color: 'var(--color-mocha)' }}>{cat}</button>
-            ))}
-          </>
-        ) : (
-          <>
-            <h2 style={{ color: 'var(--color-pink)', margin: '0 0 20px 0' }}>{selectedCategory}</h2>
-            {productos.filter(p => p.categoria === selectedCategory).map((prod) => (
-              <div key={prod.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(219, 112, 147, 0.2)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <img src={prod.img} style={{ width: '50px', height: '50px', borderRadius: '10px', objectFit: 'cover' }} alt={prod.nombre} />
-                  <div style={{ textAlign: 'left' }}>
-                    <p style={{ margin: 0, color: 'var(--color-mocha)', fontSize: '14px', fontWeight: 'bold' }}>{prod.nombre}</p>
-                    <p style={{ margin: 0, color: 'var(--color-orange)', fontSize: '12px' }}>${prod.precio}</p>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <button onClick={() => updateQuantity(prod.id, -1)} style={{ backgroundColor: 'var(--color-crema)', border: 'none', color: 'var(--color-mocha)', borderRadius: '5px', width: '30px', height: '30px', cursor: 'pointer', fontWeight: 'bold' }}>-</button>
-                  <span style={{ color: 'var(--color-mocha)', fontWeight: 'bold', width: '20px', textAlign: 'center' }}>{quantities[prod.id] || 0}</span>
-                  <button onClick={() => updateQuantity(prod.id, 1)} style={{ backgroundColor: 'var(--color-crema)', border: 'none', color: 'var(--color-mocha)', borderRadius: '5px', width: '30px', height: '30px', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
-                </div>
-              </div>
-            ))}
-            <button onClick={() => setView('main')} style={{ width: '100%', marginTop: '20px', background: 'none', border: 'none', color: 'var(--color-pink)', cursor: 'pointer', textDecoration: 'underline' }}>← Volver</button>
-          </>
-        )}
-        {view === 'main' && (
-          <button onClick={onClose} style={{ width: '100%', marginTop: '15px', background: 'none', border: 'none', color: 'var(--color-orange)', cursor: 'pointer', textDecoration: 'underline' }}>Cerrar</button>
-        )}
-      </div>
-    </div>
-  );
-};
+import { InstallPrompt } from './components/InstallPrompt';import { useState } from 'react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('Todos');
   const [quantities, setQuantities] = useState<Record<number, number>>({});
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [currentDateView, setCurrentDateView] = useState(new Date());
   const [buyerName, setBuyerName] = useState("");
@@ -105,12 +45,6 @@ export default function App() {
   const productosFiltrados = activeTab === 'Todos' ? productos : productos.filter(p => p.categoria === activeTab);
   const productosEnCarrito = productos.filter(p => (quantities[p.id] || 0) > 0);
   const montoTotal = productosEnCarrito.reduce((acc, item) => acc + (item.precio * quantities[item.id]), 0);
-
-  const closeBooking = () => {
-    setIsBookingOpen(false);
-    setActiveTab('Todos');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-crema)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 0 120px 0' }}>
@@ -175,7 +109,7 @@ export default function App() {
             <input className="majito-input" placeholder="Tu WhatsApp" value={buyerPhone} onChange={(e) => setBuyerPhone(e.target.value)} />
             <input className="majito-input" placeholder="Nombre del Festejado" value={honoreeName} onChange={(e) => setHonoreeName(e.target.value)} />
             <input className="majito-input" placeholder="WhatsApp del Festejado" value={honoreePhone} onChange={(e) => setHonoreePhone(e.target.value)} />
-            <input className="majito-input" placeholder="Dirección de Entrega" value={honoreeAddress} onChange={(e) => setBuyerAddress(e.target.value)} />
+            <input className="majito-input" placeholder="Dirección de Entrega" value={honoreeAddress} onChange={(e) => setHonoreeAddress(e.target.value)} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', margin: '15px 0' }}>
               <button onClick={() => setGiftQuantity(Math.max(1, giftQuantity - 1))} style={{ backgroundColor: 'var(--color-crema)', border: 'none', color: 'var(--color-mocha)', borderRadius: '8px', width: '40px', height: '40px', cursor: 'pointer', fontSize: '20px' }}>-</button>
               <span style={{ color: 'var(--color-mocha)', fontSize: '20px', fontWeight: 'bold', minWidth: '30px', textAlign: 'center' }}>{giftQuantity}</span>
@@ -218,8 +152,8 @@ export default function App() {
                     ))}
                 </div>
             </div>
-            <button onClick={closeBooking} style={{ backgroundColor: 'var(--color-pink)', color: 'var(--color-crema)', border: 'none', borderRadius: '10px', padding: '12px', fontWeight: 'bold', cursor: 'pointer' }}>Confirmar Reserva</button>
-            <button onClick={closeBooking} style={{ background: 'none', border: 'none', color: 'var(--color-orange)', cursor: 'pointer' }}>Cerrar</button>
+            <button onClick={() => { setIsBookingOpen(false); setActiveTab('Todos'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} style={{ backgroundColor: 'var(--color-pink)', color: 'var(--color-crema)', border: 'none', borderRadius: '10px', padding: '12px', fontWeight: 'bold', cursor: 'pointer' }}>Confirmar Reserva</button>
+            <button onClick={() => { setIsBookingOpen(false); setActiveTab('Todos'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} style={{ background: 'none', border: 'none', color: 'var(--color-orange)', cursor: 'pointer' }}>Cerrar</button>
           </div>
         </div>
       )}
@@ -259,17 +193,14 @@ export default function App() {
             <div style={{ maxHeight: '180px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px', paddingRight: '5px' }}>
               {productosEnCarrito.length === 0 ? <p style={{ color: 'var(--color-mocha)', textAlign: 'center' }}>Carrito vacío</p> : productosEnCarrito.map(item => (
                 <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-crema)', paddingBottom: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <img src={item.img} style={{ width: '45px', height: '45px', borderRadius: '10px', objectFit: 'cover' }} alt={item.nombre} />
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ color: 'var(--color-mocha)', fontSize: '13px', fontWeight: 'bold' }}>{item.nombre}</span>
-                      <span style={{ color: 'var(--color-orange)', fontSize: '12px' }}>${item.precio * quantities[item.id]}</span>
-                    </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', width: '50%' }}>
+                    <span style={{ color: 'var(--color-mocha)', fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.nombre}</span>
+                    <span style={{ color: 'var(--color-orange)', fontSize: '12px' }}>${item.precio * quantities[item.id]}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <button onClick={() => updateQuantity(item.id, -1)} style={{ backgroundColor: 'var(--color-crema)', border: 'none', color: 'var(--color-mocha)', borderRadius: '5px', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>-</button>
-                    <span style={{ color: 'var(--color-mocha)', fontWeight: 'bold', width: '20px', textAlign: 'center', fontSize: '14px' }}>{quantities[item.id]}</span>
-                    <button onClick={() => updateQuantity(item.id, 1)} style={{ backgroundColor: 'var(--color-crema)', border: 'none', color: 'var(--color-mocha)', borderRadius: '5px', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>+</button>
+                    <button onClick={() => updateQuantity(item.id, -1)} style={{ backgroundColor: 'var(--color-crema)', border: 'none', color: 'var(--color-mocha)', borderRadius: '5px', width: '25px', height: '25px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>-</button>
+                    <span style={{ color: 'var(--color-mocha)', fontWeight: 'bold', width: '15px', textAlign: 'center', fontSize: '14px' }}>{quantities[item.id]}</span>
+                    <button onClick={() => updateQuantity(item.id, 1)} style={{ backgroundColor: 'var(--color-crema)', border: 'none', color: 'var(--color-mocha)', borderRadius: '5px', width: '25px', height: '25px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
                   </div>
                 </div>
               ))}
@@ -284,20 +215,11 @@ export default function App() {
                 <span style={{ color: 'var(--color-orange)' }}>${montoTotal}</span>
               </div>
             </div>
-            <button onClick={() => { setIsCartOpen(false); setIsUpsellOpen(true); }} style={{ backgroundColor: 'var(--color-pink)', color: 'var(--color-crema)', border: 'none', borderRadius: '10px', padding: '12px', fontWeight: 'bold', marginTop: '10px', cursor: 'pointer' }}>Confirmar Pedido</button>
+            <button onClick={() => setIsCartOpen(false)} style={{ backgroundColor: 'var(--color-pink)', color: 'var(--color-crema)', border: 'none', borderRadius: '10px', padding: '12px', fontWeight: 'bold', marginTop: '10px', cursor: 'pointer' }}>Confirmar Pedido</button>
             <button onClick={() => setIsCartOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--color-orange)', cursor: 'pointer' }}>Cerrar</button>
           </div>
         </div>
       )}
-
-      <UpsellModal 
-        isOpen={isUpsellOpen} 
-        onClose={() => setIsUpsellOpen(false)} 
-        onAddVela={() => updateQuantity(999, 1)} 
-        updateQuantity={updateQuantity}
-        productos={productos}
-        quantities={quantities}
-      />
 
       <div style={{ position: 'fixed', bottom: '20px', left: '20px', right: '20px', backgroundColor: 'rgba(247, 214, 193, 0.14)', backdropFilter: 'blur(15px)', border: '1px solid var(--color-pink)', borderRadius: '50px', padding: '15px 0', display: 'flex', justifyContent: 'center', zIndex: 1000, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
         <button onClick={() => setIsCartOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative' }}>
@@ -305,8 +227,6 @@ export default function App() {
           {totalItems > 0 && <div style={{ position: 'absolute', top: '-5px', right: '-5px', backgroundColor: 'var(--color-orange)', color: 'var(--color-crema)', borderRadius: '50%', width: '16px', height: '16px', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>{totalItems}</div>}
         </button>
       </div>
-
-      <InstallPrompt />
     </div>
   );
 }

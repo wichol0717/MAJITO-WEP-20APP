@@ -1,11 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+:root {
+  --color-crema: #FFF2E6;
+  --color-sunset: #F7D6C1;
+  --color-pink: #F48FB1;
+  --color-orange: #F15A3A;
+  --color-mocha: #6D4C41;
+}
 
-html, body, #root {
+body {
+  background-color: var(--color-crema);
+  color: var(--color-mocha);
   margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #050505;
+  font-family: sans-serif;
 }
